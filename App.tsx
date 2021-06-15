@@ -1,21 +1,39 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useState} from 'react';
+import * as Font from "expo-font";
+import AppLoading from 'expo-app-loading';
+import {MainLayout} from "./src/components/MainLayout";
+import {ToDoState} from "./src/context/todo/toDoState";
+import {ScreenState} from "./src/context/screen/screenState";
 
+export type ToDosType = Array<ToDoListType>
+export type ToDoListType = {
+    id: string,
+    title: string,
+}
+export type toDoIdType = string | null
+
+async function loadApplication() {
+    await Font.loadAsync({
+        'roboto-regular': require('./assets/font/Roboto-Regular.ttf'),
+        'roboto-bold': require('./assets/font/Roboto-Bold.ttf')
+    })
+}
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    const [isReady, setIsReady] = useState(false)
+    if(!isReady){
+        return <AppLoading
+            startAsync={loadApplication}
+            onError={() => {
+                console.log('error')}}
+            onFinish={() => {setIsReady(true)} }
+        />
+    }
+    return (
+        <ScreenState>
+        <ToDoState>
+        <MainLayout/>
+        </ToDoState>
+        </ScreenState>
+    );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
