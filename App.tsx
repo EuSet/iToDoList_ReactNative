@@ -28,6 +28,7 @@ export default function App() {
             onFinish={() => {setIsReady(true)} }
         />
     }
+
     return (
         <ScreenState>
         <ToDoState>

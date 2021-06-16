@@ -13,7 +13,7 @@ export const AppButton: React.FC<PropsType> = ({children, onPress, style, color 
     const Wrapper:typeof React.Component = Platform.OS === "ios" ? TouchableOpacity : TouchableNativeFeedback
     return <Wrapper onPress={onPress} activeOpacity={0.7}>
         <View style={ {...styles.button, backgroundColor:color, ...style} }>
-            <AppTextBold>{children}</AppTextBold>
+            <AppTextBold style={styles.text}>{children}</AppTextBold>
         </View>
     </Wrapper>
 }

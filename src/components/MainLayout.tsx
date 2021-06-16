@@ -9,7 +9,7 @@ import {ScreenContext} from "../context/screen/screenContext";
 export const MainLayout = () => {
     const {toDoId} = useContext(ScreenContext)
     return (
-        <View>
+        <View style={styles.wrap}>
             <Navbar/>
             <View style={styles.container}>
                 {toDoId ? <ToDoScreen/> : <MainScreen/>}
@@ -20,6 +20,10 @@ export const MainLayout = () => {
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: THEME.PADDING_HORIZONTAL,
-        paddingVertical: 20
+        paddingVertical: 20,
+        flex:1
+    },
+    wrap: {
+        flex:1
     }
 });
