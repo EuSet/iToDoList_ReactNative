@@ -11,6 +11,7 @@ import {
 import {ToDoListType} from "../../../App";
 import {ScreenContext} from "../screen/screenContext";
 import {Alert} from "react-native";
+import {Https} from "../../api/https";
 
 export const ToDoState = (props: any) => {
     const {changeScreen} = useContext(ScreenContext)
@@ -26,34 +27,42 @@ export const ToDoState = (props: any) => {
     }
     const [state, dispatch] = useReducer(ToDoReducer, initialState, init)
     const addNewToDo = async (title: string) => {
-        const res = await fetch('https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/todos.json', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({title})
-        })
-        const data = await res.json()
-        console.log(data)
-        dispatch(addNewToDoAC(title, data.name))
-    }
-    const fetchToDos = async () => {
         try {
             showLoader()
             clearError()
-            const res = await fetch('https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/todos.json', {
-                method: 'GET',
-                headers:{'Content-Type': 'application/json'}
-            })
-            const data = await res.json()
-            const todos = Object.keys(data).map(key => ({...data[key], id: key}))
-            console.log(todos)
-            dispatch(fetchToDosAC(todos))
+            const data = await Https.post('https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/todos.json', title)
+            dispatch(addNewToDoAC(title, data.name))
         } catch (e) {
             showError('Something wrong...')
         } finally {
             hideLoader()
         }
     }
-    const addNewToDoTitle = (id: string, title: string) => dispatch(addNewToDoTitleAC(id, title))
+    const fetchToDos = async () => {
+        try {
+            showLoader()
+            clearError()
+            const data = await Https.get('https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/todos.json')
+            if(data){
+                const todos = Object.keys(data).map(key => ({...data[key], id: key}))
+                dispatch(fetchToDosAC(todos))
+            }
+        } catch (e) {
+            showError('Something wrong...')
+        } finally {
+            hideLoader()
+        }
+    }
+    const addNewToDoTitle = async (id: string, title: string) => {
+        clearError()
+        try {
+            await Https.patch(`https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/todos/${id}.json`, title)
+            dispatch(addNewToDoTitleAC(id, title))
+        } catch (e) {
+            showError('Something wrong...')
+        }
+    }
+
     const removeToDo = (todo: ToDoListType) => {
         Alert.alert(
             "Remove To Do List",
@@ -66,9 +75,15 @@ export const ToDoState = (props: any) => {
                 {
                     text: "Remove",
                     style: "destructive",
-                    onPress: () => {
-                        changeScreen(null)
-                        dispatch(removeToDoAC(todo))
+                    onPress: async () => {
+                        clearError()
+                        try {
+                            await Https.delete(`https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/todos/${todo.id}.json`)
+                            changeScreen(null)
+                            dispatch(removeToDoAC(todo))
+                        } catch (e) {
+                            showError('Something wrong...')
+                        }
                     }
                 }
             ],
@@ -86,8 +101,8 @@ export const ToDoState = (props: any) => {
             addNewToDoTitle,
             removeToDo,
             fetchToDos,
-            loader:state.loader,
-            error:state.error
+            loader: state.loader,
+            error: state.error
         }
     }>
         {props.children}

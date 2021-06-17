@@ -17,8 +17,8 @@ export const ToDoScreen = (props:PropsType) => {
     const todo = todos.find(t => t.id === toDoId)!
     const [modal, setModal] = useState(false)
     const value = todo.title
-    const onChangeToDoTitle = (title:string) => {
-        addNewToDoTitle(todo.id, title)
+    const onChangeToDoTitle = async (title:string) => {
+       await addNewToDoTitle(todo.id, title)
         setModal(false)
     }
     return <View>
