@@ -4,6 +4,7 @@ import AppLoading from 'expo-app-loading';
 import {MainLayout} from "./src/components/MainLayout";
 import {ToDoState} from "./src/context/todo/toDoState";
 import {ScreenState} from "./src/context/screen/screenState";
+import {AuthState} from "./src/context/auth/authState";
 
 export type ToDosType = Array<ToDoListType>
 export type ToDoListType = {
@@ -18,22 +19,28 @@ async function loadApplication() {
         'roboto-bold': require('./assets/font/Roboto-Bold.ttf')
     })
 }
+
 export default function App() {
     const [isReady, setIsReady] = useState(false)
-    if(!isReady){
+    if (!isReady) {
         return <AppLoading
             startAsync={loadApplication}
             onError={() => {
-                console.log('error')}}
-            onFinish={() => {setIsReady(true)} }
+                console.log('error')
+            }}
+            onFinish={() => {
+                setIsReady(true)
+            }}
         />
     }
 
     return (
         <ScreenState>
-        <ToDoState>
-        <MainLayout/>
-        </ToDoState>
+            <ToDoState>
+                <AuthState>
+                    <MainLayout/>
+                </AuthState>
+            </ToDoState>
         </ScreenState>
     );
 }

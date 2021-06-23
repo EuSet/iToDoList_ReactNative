@@ -12,14 +12,15 @@ import {ToDoListType} from "../../../App";
 import {ScreenContext} from "../screen/screenContext";
 import {Alert} from "react-native";
 import {Https} from "../../api/https";
+import {fire} from "../../firebase/fireConfig";
 
 export const ToDoState = (props: any) => {
     const {changeScreen} = useContext(ScreenContext)
-
+    const userId = fire.auth().currentUser?.uid
     function init(initialState: initialStateType) {
         return initialState
     }
-
+//?orderBy="title"&startAt="React"&print=pretty - sort todos example
     const initialState = {
         todos: [],
         error: null,
@@ -30,7 +31,7 @@ export const ToDoState = (props: any) => {
         try {
             showLoader()
             clearError()
-            const data = await Https.post('https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/todos.json', title)
+            const data = await Https.post(`https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/users/${userId}/todos.json`, title)
             dispatch(addNewToDoAC(title, data.name))
         } catch (e) {
             showError('Something wrong...')
@@ -42,7 +43,9 @@ export const ToDoState = (props: any) => {
         try {
             showLoader()
             clearError()
-            const data = await Https.get('https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/todos.json')
+            // const data = fire.database().ref(`/todos.json/`).once('value')
+            const data = await Https.get(`https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/users/${userId}/todos.json`)
+           console.log(data)
             if(data){
                 const todos = Object.keys(data).map(key => ({...data[key], id: key}))
                 dispatch(fetchToDosAC(todos))
@@ -56,7 +59,7 @@ export const ToDoState = (props: any) => {
     const addNewToDoTitle = async (id: string, title: string) => {
         clearError()
         try {
-            await Https.patch(`https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/todos/${id}.json`, title)
+            await Https.patch(`https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/users/${userId}/todos/${id}.json`, title)
             dispatch(addNewToDoTitleAC(id, title))
         } catch (e) {
             showError('Something wrong...')
@@ -78,7 +81,7 @@ export const ToDoState = (props: any) => {
                     onPress: async () => {
                         clearError()
                         try {
-                            await Https.delete(`https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/todos/${todo.id}.json`)
+                            await Https.delete(`https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/users/${userId}/todos/${todo.id}.json`)
                             changeScreen(null)
                             dispatch(removeToDoAC(todo))
                         } catch (e) {
