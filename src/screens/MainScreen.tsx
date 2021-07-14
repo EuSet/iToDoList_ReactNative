@@ -11,17 +11,16 @@ import {AppButton} from "../styles/AppButton";
 import {THEME} from "../styles/Theme";
 
 
-type PropsType = {
-}
+type PropsType = {}
 
-export const MainScreen = (props:PropsType) => {
-    const loadToDos = useCallback(async () => await fetchToDos(), [] )
+export const MainScreen = (props: PropsType) => {
+    const loadToDos = useCallback(async () => await fetchToDos(), [])
     useEffect(() => {
         loadToDos()
     }, [])
     const {todos, addNewToDo, removeToDo, fetchToDos, loader, error} = useContext(ToDoContext)
     const {changeScreen} = useContext(ScreenContext)
-    const renderItem:ListRenderItem<ToDoListType> = ({item}) => (
+    const renderItem: ListRenderItem<ToDoListType> = ({item}) => (
         <ToDoList
             removeToDo={removeToDo}
             onOpen={changeScreen}
@@ -33,15 +32,15 @@ export const MainScreen = (props:PropsType) => {
         renderItem={renderItem}
         keyExtractor={item => item.id}
     />
-    if(!todos.length){
+    if (!todos.length) {
         content = <View style={styles.imgWrap}>
             <Image style={styles.image} source={require('./../../assets/original.png')}/>
         </View>
     }
-    if(loader){
+    if (loader) {
         return <AppLoader/>
     }
-    if(error){
+    if (error) {
         return <View style={styles.center}>
             <AppText style={styles.error}>{error}</AppText>
             <AppButton onPress={loadToDos}>Try again</AppButton>
@@ -54,27 +53,27 @@ export const MainScreen = (props:PropsType) => {
 }
 
 const styles = StyleSheet.create({
-    imgWrap:{
-        justifyContent:"center",
-        alignItems:"center",
-        height:300,
-        padding:10,
+    imgWrap: {
+        justifyContent: "center",
+        alignItems: "center",
+        height: 300,
+        padding: 10,
 
     },
-    image:{
-        resizeMode:"contain",
-        width:'100%',
-        height:'100%'
+    image: {
+        resizeMode: "contain",
+        width: '100%',
+        height: '100%'
     },
-    center:{
-        flex:1,
-        justifyContent:'center',
-        alignItems:'center'
+    center: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
-    error:{
-        color:THEME.DANGER_COLOR,
-        fontSize:20,
-        paddingBottom:10
+    error: {
+        color: THEME.DANGER_COLOR,
+        fontSize: 20,
+        paddingBottom: 10
     }
 
 })

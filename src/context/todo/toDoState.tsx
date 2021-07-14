@@ -14,12 +14,15 @@ import {Alert} from "react-native";
 import {Https} from "../../api/https";
 import {fire} from "../../firebase/fireConfig";
 
+
+
 export const ToDoState = (props: any) => {
     const {changeScreen} = useContext(ScreenContext)
     const userId = fire.auth().currentUser?.uid
     function init(initialState: initialStateType) {
         return initialState
     }
+
 //?orderBy="title"&startAt="React"&print=pretty - sort todos example
     const initialState = {
         todos: [],
@@ -44,9 +47,10 @@ export const ToDoState = (props: any) => {
             showLoader()
             clearError()
             // const data = fire.database().ref(`/todos.json/`).once('value')
+            const userId = fire.auth().currentUser?.uid
             const data = await Https.get(`https://react-native-todo-2ff6d-default-rtdb.firebaseio.com/users/${userId}/todos.json`)
-           console.log(data)
-            if(data){
+            console.log(userId)
+            if (data) {
                 const todos = Object.keys(data).map(key => ({...data[key], id: key}))
                 dispatch(fetchToDosAC(todos))
             }
